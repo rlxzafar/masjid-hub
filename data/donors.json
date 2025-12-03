@@ -1,0 +1,18 @@
+[
+  {
+    "id": "admin-1",
+    "username": "admin",
+    "password": "adminpassword",
+    "name": "Admin User",
+    "email": "admin@masjidhub.com",
+    "status": "approved"
+  },
+  {
+    "id": "1764151754018",
+    "username": "sza",
+    "password": "123",
+    "name": "Salman",
+    "email": "sza@nomail.com",
+    "status": "approved"
+  }
+]

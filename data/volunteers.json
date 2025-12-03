@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "name": "Ali Hassan",
+        "role": "Event Coordinator",
+        "email": "ali.hassan@example.com",
+        "phone": "+1 234 567 8901",
+        "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        "id": "2",
+        "name": "Fatima Zahra",
+        "role": "Community Outreach",
+        "email": "fatima.z@example.com",
+        "phone": "+1 234 567 8902",
+        "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        "id": "3",
+        "name": "Omar Farooq",
+        "role": "Logistics Manager",
+        "email": "omar.f@example.com",
+        "phone": "+1 234 567 8903",
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop"
+    }
+]

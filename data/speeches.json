@@ -1,0 +1,31 @@
+[
+    {
+        "id": "1",
+        "masjidId": "1",
+        "title": "Understanding the Quran",
+        "speaker": "Sheikh Ahmed",
+        "datetime": "2025-11-28T19:30:00",
+        "type": "speech",
+        "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "description": "A deep dive into the meanings of Surah Al-Fatiha."
+    },
+    {
+        "id": "2",
+        "masjidId": "2",
+        "title": "Community Iftar",
+        "speaker": "Imam Yusuf",
+        "datetime": "2025-11-27T17:30:00",
+        "type": "event",
+        "description": "Join us for a community gathering and iftar."
+    },
+    {
+        "id": "3",
+        "masjidId": "3",
+        "title": "The Life of the Prophet",
+        "speaker": "Sheikh Ibrahim",
+        "datetime": "2025-11-29T20:00:00",
+        "type": "speech",
+        "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "description": "Lessons from the Seerah."
+    }
+]
