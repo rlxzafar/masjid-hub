@@ -68,7 +68,7 @@ export default function ManageSpeechesPage() {
                 <h1 className="text-2xl font-semibold text-slate-900">Manage Speeches & Events</h1>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90"
+                    className="cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90"
                 >
                     <Plus className="h-4 w-4 mr-2" />
                     Add New
@@ -99,10 +99,10 @@ export default function ManageSpeechesPage() {
                                         </div>
                                     </div>
                                     <div className="flex space-x-2">
-                                        <button className="p-2 text-slate-400 hover:text-slate-500">
+                                        <button className="cursor-pointer p-2 text-slate-400 hover:text-slate-500">
                                             <Edit className="h-5 w-5" />
                                         </button>
-                                        <button onClick={() => handleDelete(speech.id)} className="p-2 text-red-400 hover:text-red-500">
+                                        <button onClick={() => handleDelete(speech.id)} className="cursor-pointer p-2 text-red-400 hover:text-red-500">
                                             <Trash className="h-5 w-5" />
                                         </button>
                                     </div>
@@ -117,7 +117,7 @@ export default function ManageSpeechesPage() {
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div className="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setIsModalOpen(false)}></div>
+                        <div className="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity cursor-pointer" aria-hidden="true" onClick={() => setIsModalOpen(false)}></div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                             <form onSubmit={handleSubmit}>
@@ -186,10 +186,10 @@ export default function ManageSpeechesPage() {
                                     </div>
                                 </div>
                                 <div className="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                    <button type="submit" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm">
+                                    <button type="submit" className="cursor-pointer w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm">
                                         Save
                                     </button>
-                                    <button type="button" onClick={() => setIsModalOpen(false)} className="mt-3 w-full inline-flex justify-center rounded-md border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                    <button type="button" onClick={() => setIsModalOpen(false)} className="cursor-pointer mt-3 w-full inline-flex justify-center rounded-md border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                                         Cancel
                                     </button>
                                 </div>

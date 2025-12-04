@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         // In a real app, verify admin session here
 
-        const { name, description, contact, amountNeeded } = body;
+        const { name, description, contact, amountNeeded, priority } = body;
 
         if (!name || !description || !contact || !amountNeeded) {
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
@@ -56,7 +56,8 @@ export async function POST(request: Request) {
             description,
             contact,
             amountNeeded: Number(amountNeeded),
-            status: 'open'
+            status: 'open',
+            priority: priority || 'normal'
         };
 
         needy.push(newPerson);
@@ -89,6 +90,9 @@ export async function PUT(request: Request) {
             return NextResponse.json({ error: 'Person not found' }, { status: 404 });
         }
 
+        if (updates.status === 'fulfilled' && needy[index].status !== 'fulfilled') {
+            updates.fulfilledAt = new Date().toISOString();
+        }
         needy[index] = { ...needy[index], ...updates };
 
         fs.writeFileSync(needyFilePath, JSON.stringify(needy, null, 2));

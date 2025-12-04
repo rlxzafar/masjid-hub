@@ -112,6 +112,17 @@ export default function MasjidModal({ isOpen, onClose, onSuccess }: MasjidModalP
                                         />
                                     </div>
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700">Image URL</label>
+                                    <input
+                                        type="url"
+                                        className="mt-1 block w-full border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border"
+                                        placeholder="https://example.com/masjid.jpg"
+                                        value={formData.image}
+                                        onChange={e => setFormData({ ...formData, image: e.target.value })}
+                                    />
+                                    <p className="mt-1 text-xs text-slate-500">Optional. Leave blank for default placeholder.</p>
+                                </div>
 
                                 <div className="border-t pt-4 mt-4">
                                     <h4 className="text-sm font-medium text-slate-900 mb-2">Login Credentials</h4>

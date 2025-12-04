@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NeedyPerson, Donation } from '@/types';
 import { Heart, DollarSign, Users, X } from 'lucide-react';
+import HadithSlider from '@/components/HadithSlider';
 
 export default function DonorDashboard() {
     const router = useRouter();
@@ -10,6 +11,7 @@ export default function DonorDashboard() {
     const [loading, setLoading] = useState(true);
     const [totalDonated, setTotalDonated] = useState(0);
     const [user, setUser] = useState<any>(null);
+    const [myDonations, setMyDonations] = useState<Donation[]>([]);
 
     // Modal State
     const [selectedPerson, setSelectedPerson] = useState<NeedyPerson | null>(null);
@@ -41,6 +43,7 @@ export default function DonorDashboard() {
             const donationsRes = await fetch(`/api/donations?donorId=${userId}`);
             if (donationsRes.ok) {
                 const donations: Donation[] = await donationsRes.json();
+                setMyDonations(donations);
                 const total = donations.reduce((sum, d) => sum + d.amount, 0);
                 setTotalDonated(total);
             }
@@ -91,6 +94,33 @@ export default function DonorDashboard() {
         }
     };
 
+    // Filter and Sort Needy Persons
+    const filteredAndSortedNeedy = needy
+        .filter(person => {
+            const isFulfilled = person.status === 'fulfilled' || (person.amountRaised || 0) >= person.amountNeeded;
+            const hasDonated = myDonations.some(d => d.needyId === person.id);
+
+            // If fulfilled and user hasn't donated, hide it
+            if (isFulfilled && !hasDonated) return false;
+
+            // If fulfilled and time passed > 1 month, hide from everyone
+            if (isFulfilled) {
+                const fulfilledDate = person.fulfilledAt ? new Date(person.fulfilledAt) : new Date(parseInt(person.id));
+                const oneMonthAgo = new Date();
+                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+                if (fulfilledDate < oneMonthAgo) return false;
+            }
+
+            return true;
+        })
+        .sort((a, b) => {
+            const priorityOrder = { high: 3, normal: 2, low: 1 };
+            const pA = priorityOrder[a.priority || 'normal'];
+            const pB = priorityOrder[b.priority || 'normal'];
+            return pB - pA;
+        });
+
     if (loading) return (
         <div className="flex justify-center items-center min-h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
@@ -109,66 +139,36 @@ export default function DonorDashboard() {
                         localStorage.removeItem('user');
                         router.push('/login');
                     }}
-                    className="text-red-600 hover:text-red-700 font-medium px-4 py-2 hover:bg-red-50 rounded-lg transition-colors"
+                    className="cursor-pointer text-red-600 hover:text-red-700 font-medium px-4 py-2 hover:bg-red-50 rounded-lg transition-colors"
                 >
                     Logout
                 </button>
             </div>
 
-            {/* Stats Card */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-                <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-6 text-white shadow-lg">
-                    <div className="flex items-center gap-4 mb-2">
-                        <div className="p-3 bg-white/20 rounded-full">
-                            <Heart className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-emerald-100 text-sm font-medium">Total Donated</p>
-                            <h3 className="text-3xl font-bold">${totalDonated.toLocaleString()}</h3>
-                        </div>
-                    </div>
-                    <p className="text-emerald-100 text-sm mt-2">Thank you for your generosity!</p>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-4">
-                    <div className="p-3 bg-blue-100 rounded-full text-blue-600">
-                        <Users className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <p className="text-gray-500 text-sm font-medium">Lives Impacted</p>
-                        <h3 className="text-2xl font-bold text-gray-800">--</h3>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-4">
-                    <div className="p-3 bg-purple-100 rounded-full text-purple-600">
-                        <DollarSign className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <p className="text-gray-500 text-sm font-medium">Platform Total</p>
-                        <h3 className="text-2xl font-bold text-gray-800">--</h3>
-                    </div>
-                </div>
-            </div>
+            <HadithSlider />
 
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Urgent Needs</h2>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {needy.map(person => {
+                {filteredAndSortedNeedy.map(person => {
                     const raised = person.amountRaised || 0;
                     const needed = person.amountNeeded;
                     const percent = Math.min((raised / needed) * 100, 100);
                     const remaining = Math.max(needed - raised, 0);
+                    const isFulfilled = person.status === 'fulfilled' || raised >= needed;
 
                     return (
-                        <div key={person.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all overflow-hidden flex flex-col">
+                        <div key={person.id} className={`bg-white rounded-2xl shadow-sm border hover:shadow-md transition-all overflow-hidden flex flex-col ${person.priority === 'high' ? 'border-red-400' :
+                            person.priority === 'low' ? 'border-blue-300' :
+                                'border-gray-200'
+                            }`}>
                             <div className="p-6 flex-1">
                                 <div className="flex justify-between items-start mb-4">
-                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${person.status === 'fulfilled'
-                                            ? 'bg-blue-100 text-blue-700'
-                                            : 'bg-emerald-100 text-emerald-700'
+                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${isFulfilled
+                                        ? 'bg-blue-100 text-blue-700'
+                                        : 'bg-emerald-100 text-emerald-700'
                                         }`}>
-                                        {person.status === 'fulfilled' ? 'Fulfilled' : 'Active'}
+                                        {isFulfilled ? 'Fulfilled' : 'Active'}
                                     </span>
                                 </div>
 
@@ -177,8 +177,8 @@ export default function DonorDashboard() {
 
                                 <div className="space-y-2 mb-6">
                                     <div className="flex justify-between text-sm font-medium">
-                                        <span className="text-gray-500">Raised: ${raised.toLocaleString()}</span>
-                                        <span className="text-gray-900">Goal: ${needed.toLocaleString()}</span>
+                                        <span className="text-gray-500">Raised: ₹{raised.toLocaleString()}</span>
+                                        <span className="text-gray-900">Goal: ₹{needed.toLocaleString()}</span>
                                     </div>
                                     <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
                                         <div
@@ -193,10 +193,10 @@ export default function DonorDashboard() {
                             </div>
 
                             <div className="p-6 pt-0 mt-auto">
-                                {person.status !== 'fulfilled' ? (
+                                {!isFulfilled ? (
                                     <button
                                         onClick={() => handleDonateClick(person)}
-                                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                        className="cursor-pointer w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2"
                                     >
                                         <Heart className="w-4 h-4" />
                                         Donate Now
@@ -224,7 +224,7 @@ export default function DonorDashboard() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="flex justify-between items-center p-6 border-b border-gray-100">
                             <h3 className="text-xl font-bold text-gray-800">Make a Donation</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                            <button onClick={() => setIsModalOpen(false)} className="cursor-pointer text-gray-400 hover:text-gray-600 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -234,15 +234,15 @@ export default function DonorDashboard() {
                                 <p className="text-gray-500 text-sm mb-1">You are donating to</p>
                                 <h4 className="text-lg font-bold text-emerald-800">{selectedPerson.name}</h4>
                                 <p className="text-sm text-gray-600 mt-2">
-                                    Amount needed: <span className="font-semibold">${Math.max(selectedPerson.amountNeeded - (selectedPerson.amountRaised || 0), 0)}</span>
+                                    Amount needed: <span className="font-semibold">₹{Math.max(selectedPerson.amountNeeded - (selectedPerson.amountRaised || 0), 0)}</span>
                                 </p>
                             </div>
 
                             <form onSubmit={handleDonationSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Donation Amount ($)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Donation Amount (₹)</label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
                                         <input
                                             type="number"
                                             required
@@ -257,7 +257,7 @@ export default function DonorDashboard() {
 
                                 <button
                                     type="submit"
-                                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-emerald-200 mt-4"
+                                    className="cursor-pointer w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-emerald-200 mt-4"
                                 >
                                     Confirm Donation
                                 </button>

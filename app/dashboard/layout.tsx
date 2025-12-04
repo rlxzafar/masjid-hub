@@ -1,9 +1,9 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, Mic, Clock, LogOut, Users } from 'lucide-react';
+import { LayoutDashboard, Mic, Clock, LogOut, Users, Building2, HeartHandshake, HandHelping } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function DashboardLayout({
@@ -13,7 +13,7 @@ export default function DashboardLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const searchParams = useSearchParams();
+
     const [userType, setUserType] = useState<'admin' | 'masjid' | 'donor' | null>(null);
 
     useEffect(() => {
@@ -55,9 +55,9 @@ export default function DashboardLayout({
     if (userType === 'admin') {
         navigation = [
             { name: 'Admin Overview', href: '/dashboard/admin', icon: LayoutDashboard },
-            { name: 'Manage Masjids', href: '/dashboard/admin/masjids', icon: Users },
-            { name: 'Manage Donors', href: '/dashboard/admin?tab=donors', icon: Users },
-            { name: 'Manage Needy', href: '/dashboard/admin?tab=needy', icon: Users },
+            { name: 'Manage Masjids', href: '/dashboard/admin/masjids', icon: Building2 },
+            { name: 'Manage Donors', href: '/dashboard/admin/donors', icon: HeartHandshake },
+            { name: 'Manage Needy', href: '/dashboard/admin/needy', icon: HandHelping },
         ];
     } else if (userType === 'masjid') {
         navigation = [
@@ -81,19 +81,12 @@ export default function DashboardLayout({
                         <div className="flex-1 px-3 space-y-1">
                             {navigation.map((item) => {
                                 let isActive = false;
-                                if (item.href.includes('?')) {
-                                    // Handle query params (e.g. ?tab=donors)
-                                    const [path, query] = item.href.split('?');
-                                    const tabParam = new URLSearchParams(query).get('tab');
-                                    const currentTab = searchParams.get('tab');
-                                    isActive = pathname === path && currentTab === tabParam;
-                                } else {
-                                    // Handle exact path match or sub-paths (but not if it's the root dashboard path matching a sub-path)
-                                    isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard/admin' && item.href !== '/dashboard');
-                                    // Special case for admin root
-                                    if (item.href === '/dashboard/admin' && pathname === '/dashboard/admin' && !searchParams.get('tab')) {
-                                        isActive = true;
-                                    }
+                                // Handle exact path match or sub-paths (but not if it's the root dashboard path matching a sub-path)
+                                isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard/admin' && item.href !== '/dashboard');
+
+                                // Special case for admin root to ensure it doesn't stay active when on subpages
+                                if (item.href === '/dashboard/admin' && pathname !== '/dashboard/admin') {
+                                    isActive = false;
                                 }
 
                                 return (
@@ -123,7 +116,7 @@ export default function DashboardLayout({
                                     localStorage.removeItem('user');
                                     router.push('/login');
                                 }}
-                                className="w-full group flex items-center px-2 py-2 text-sm font-medium text-red-600 rounded-md hover:bg-red-50"
+                                className="cursor-pointer w-full group flex items-center px-2 py-2 text-sm font-medium text-red-600 rounded-md hover:bg-red-50"
                             >
                                 <LogOut className="mr-3 flex-shrink-0 h-6 w-6 text-red-400 group-hover:text-red-500" />
                                 Sign Out

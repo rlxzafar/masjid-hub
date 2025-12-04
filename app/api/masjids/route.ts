@@ -66,3 +66,75 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to add masjid' }, { status: 500 });
     }
 }
+
+export async function PUT(request: Request) {
+    try {
+        const body = await request.json();
+        const { id, name, address, imamName, contact, image, username, password } = body;
+
+        if (!id) {
+            return NextResponse.json({ error: 'Masjid ID is required' }, { status: 400 });
+        }
+
+        ensureFile();
+        const fileData = fs.readFileSync(masjidsFilePath, 'utf8');
+        let masjids: Masjid[] = JSON.parse(fileData);
+
+        const index = masjids.findIndex(m => m.id === id);
+        if (index === -1) {
+            return NextResponse.json({ error: 'Masjid not found' }, { status: 404 });
+        }
+
+        // Check if username exists for other masjids
+        if (username && masjids.some(m => m.username === username && m.id !== id)) {
+            return NextResponse.json({ error: 'Username already exists' }, { status: 400 });
+        }
+
+        masjids[index] = {
+            ...masjids[index],
+            name: name || masjids[index].name,
+            address: address || masjids[index].address,
+            imamName: imamName || masjids[index].imamName,
+            contact: contact || masjids[index].contact,
+            image: image || masjids[index].image,
+            username: username || masjids[index].username,
+            password: password || masjids[index].password
+        };
+
+        fs.writeFileSync(masjidsFilePath, JSON.stringify(masjids, null, 2), 'utf8');
+
+        return NextResponse.json(masjids[index]);
+    } catch (error) {
+        console.error('Error updating masjid:', error);
+        return NextResponse.json({ error: 'Failed to update masjid' }, { status: 500 });
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ error: 'Masjid ID is required' }, { status: 400 });
+        }
+
+        ensureFile();
+        const fileData = fs.readFileSync(masjidsFilePath, 'utf8');
+        let masjids: Masjid[] = JSON.parse(fileData);
+
+        const initialLength = masjids.length;
+        masjids = masjids.filter(m => m.id !== id);
+
+        if (masjids.length === initialLength) {
+            return NextResponse.json({ error: 'Masjid not found' }, { status: 404 });
+        }
+
+        fs.writeFileSync(masjidsFilePath, JSON.stringify(masjids, null, 2), 'utf8');
+
+        return NextResponse.json({ message: 'Masjid deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting masjid:', error);
+        return NextResponse.json({ error: 'Failed to delete masjid' }, { status: 500 });
+    }
+}

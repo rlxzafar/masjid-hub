@@ -53,6 +53,25 @@ export async function POST(request: Request) {
         donations.push(newDonation);
         fs.writeFileSync(donationsFilePath, JSON.stringify(donations, null, 2));
 
+        // Check if fully funded and update status
+        const needyFilePath = path.join(process.cwd(), 'data', 'needy.json');
+        if (fs.existsSync(needyFilePath)) {
+            const needyData = fs.readFileSync(needyFilePath, 'utf8');
+            let needyList: any[] = JSON.parse(needyData);
+            const needyIndex = needyList.findIndex(n => n.id === needyId);
+
+            if (needyIndex !== -1) {
+                const totalRaised = donations
+                    .filter(d => d.needyId === needyId)
+                    .reduce((sum, d) => sum + d.amount, 0);
+
+                if (totalRaised >= needyList[needyIndex].amountNeeded) {
+                    needyList[needyIndex].status = 'fulfilled';
+                    fs.writeFileSync(needyFilePath, JSON.stringify(needyList, null, 2));
+                }
+            }
+        }
+
         return NextResponse.json({ message: 'Donation successful', donation: newDonation }, { status: 201 });
     } catch (error) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

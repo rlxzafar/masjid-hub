@@ -46,6 +46,12 @@ export interface Donor {
   password?: string; // Optional for frontend, required for backend
   name: string;
   email: string;
+  mobile: string;
+  address?: string;
+  location?: {
+    lat: number;
+    lng: number;
+  };
   status: 'pending' | 'approved';
 }
 
@@ -57,6 +63,8 @@ export interface NeedyPerson {
   amountNeeded: number;
   amountRaised?: number;
   status: 'open' | 'fulfilled';
+  priority?: 'high' | 'normal' | 'low';
+  fulfilledAt?: string;
 }
 
 export interface Donation {

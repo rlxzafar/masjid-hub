@@ -14,5 +14,14 @@
     "name": "Salman",
     "email": "sza@nomail.com",
     "status": "approved"
+  },
+  {
+    "id": "1764786127698",
+    "username": "hza",
+    "password": "123456",
+    "name": "hammad zafar ansari",
+    "email": "hza@nomail.com",
+    "mobile": "6388602227",
+    "status": "approved"
   }
 ]

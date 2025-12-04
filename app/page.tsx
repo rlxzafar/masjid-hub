@@ -21,8 +21,12 @@ export default function Home() {
   const recentSpeeches = speeches.slice(3);
 
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    const user = localStorage.getItem('user');
+    setIsLoggedIn(!!user);
+
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % featuredSpeeches.length);
     }, 5000);
@@ -58,12 +62,20 @@ export default function Home() {
                 Stay updated with prayer times, listen to inspiring speeches, and join community events at your local Masjids.
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
-                <Link href="/masjids" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90 md:py-4 md:text-lg md:px-10">
-                  Find a Masjid
-                </Link>
-                <Link href="/events" className="mt-3 sm:mt-0 sm:ml-3 inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-primary bg-primary/10 hover:bg-primary/20 md:py-4 md:text-lg md:px-10">
-                  Browse Events
-                </Link>
+                {isLoggedIn ? (
+                  <Link href="/dashboard/donor" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90 md:py-4 md:text-lg md:px-10">
+                    Go to Dashboard
+                  </Link>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                    <Link href="/login" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90 md:py-4 md:text-lg md:px-10">
+                      Login
+                    </Link>
+                    <Link href="/become-donor" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-primary bg-primary/10 hover:bg-primary/20 md:py-4 md:text-lg md:px-10">
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
             <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
@@ -72,12 +84,12 @@ export default function Home() {
 
                 {/* Slider Controls */}
                 <div className="absolute top-1/2 -left-4 -translate-y-1/2 z-20 hidden md:block">
-                  <button onClick={prevSlide} className="p-2 rounded-full bg-white shadow-lg text-slate-600 hover:text-primary hover:scale-110 transition-all">
+                  <button onClick={prevSlide} className="cursor-pointer p-2 rounded-full bg-white shadow-lg text-slate-600 hover:text-primary hover:scale-110 transition-all">
                     <ChevronLeft className="w-6 h-6" />
                   </button>
                 </div>
                 <div className="absolute top-1/2 -right-4 -translate-y-1/2 z-20 hidden md:block">
-                  <button onClick={nextSlide} className="p-2 rounded-full bg-white shadow-lg text-slate-600 hover:text-primary hover:scale-110 transition-all">
+                  <button onClick={nextSlide} className="cursor-pointer p-2 rounded-full bg-white shadow-lg text-slate-600 hover:text-primary hover:scale-110 transition-all">
                     <ChevronRight className="w-6 h-6" />
                   </button>
                 </div>
@@ -88,7 +100,7 @@ export default function Home() {
                     <button
                       key={idx}
                       onClick={() => setCurrentSlide(idx)}
-                      className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-primary w-4' : 'bg-slate-300'}`}
+                      className={`cursor-pointer w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-primary w-4' : 'bg-slate-300'}`}
                     />
                   ))}
                 </div>

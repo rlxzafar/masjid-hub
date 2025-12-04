@@ -1,26 +1,26 @@
 [
-    {
-        "id": "1",
-        "name": "Masjid Al-Noor",
-        "address": "123 Peace Street, Cityville",
-        "image": "/masjid-placeholder.png",
-        "imamName": "Sheikh Ahmed",
-        "contact": "+1 234 567 8900"
-    },
-    {
-        "id": "2",
-        "name": "Central Jamia Mosque",
-        "address": "456 Unity Avenue, Metro City",
-        "image": "/masjid-placeholder.png",
-        "imamName": "Imam Yusuf",
-        "contact": "+1 987 654 3210"
-    },
-    {
-        "id": "3",
-        "name": "Masjid Al-Salam",
-        "address": "789 Harmony Lane, Suburbia",
-        "image": "/masjid-placeholder.png",
-        "imamName": "Sheikh Ibrahim",
-        "contact": "+1 555 123 4567"
-    }
+  {
+    "id": "1",
+    "name": "Masjid Al-Noor",
+    "address": "123 Peace Street, Cityville",
+    "image": "/masjid-placeholder.png",
+    "imamName": "Sheikh Ahmed",
+    "contact": "+1 234 567 8900"
+  },
+  {
+    "id": "2",
+    "name": "Central Jamia Mosque",
+    "address": "456 Unity Avenue, Metro City",
+    "image": "/masjid-placeholder.png",
+    "imamName": "Imam Yusuf",
+    "contact": "+1 987 654 3210"
+  },
+  {
+    "id": "3",
+    "name": "Masjid Al-Salam",
+    "address": "789 Harmony Lane, Suburbia",
+    "image": "/masjid-placeholder.png",
+    "imamName": "Sheikh Ibrahim",
+    "contact": "+1 555 123 4567"
+  }
 ]

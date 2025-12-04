@@ -9,8 +9,10 @@ export async function GET(request: Request) {
     // In a real app, verify admin session here
     const fileData = fs.readFileSync(donorsFilePath, 'utf8');
     const donors: Donor[] = JSON.parse(fileData);
+    // Filter out admin user
+    const filteredDonors = donors.filter(d => d.username !== 'admin');
     // Return all donors except passwords
-    const safeDonors = donors.map(({ password, ...rest }) => rest);
+    const safeDonors = filteredDonors.map(({ password, ...rest }) => rest);
     return NextResponse.json(safeDonors);
 }
 

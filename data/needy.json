@@ -5,6 +5,8 @@
     "description": "yateem girl need schooling for two years",
     "contact": "9214285988",
     "amountNeeded": "30000",
-    "status": "open"
+    "status": "fulfilled",
+    "fulfilledAt": "2025-12-04T06:07:07.806Z",
+    "priority": "high"
   }
 ]
