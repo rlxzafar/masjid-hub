@@ -31,12 +31,18 @@ export default function LoginPage() {
                 console.log('Setting localStorage user:', data.user);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
-                if (data.user.username === 'admin') {
+                if (data.user.role === 'admin' || data.user.username === 'admin') {
                     console.log('Redirecting to dashboard (admin)');
+                    localStorage.setItem('masjidId', 'admin');
+                    router.push('/dashboard/admin');
+                } else if (data.user.role === 'masjid') {
+                    console.log('Redirecting to dashboard (masjid)');
+                    localStorage.setItem('masjidId', data.user.id);
                     router.push('/dashboard');
                 } else {
                     console.log('Redirecting to dashboard (donor)');
-                    router.push('/dashboard');
+                    localStorage.removeItem('masjidId'); // Ensure no masjidId for donors
+                    router.push('/dashboard/donor');
                 }
             } else {
                 setError(data.error || 'Login failed');

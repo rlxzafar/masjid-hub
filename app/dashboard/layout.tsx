@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, Mic, Clock, LogOut, Users, Building2, HeartHandshake, HandHelping } from 'lucide-react';
+import { LayoutDashboard, Mic, Clock, LogOut, Users, Building2, HeartHandshake, HandHelping, Quote, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function DashboardLayout({
@@ -27,10 +27,13 @@ export default function DashboardLayout({
         } else if (userStr) {
             try {
                 const user = JSON.parse(userStr);
-                if (user.username === 'admin') {
+                if (user.role === 'admin' || user.username === 'admin') {
                     setUserType('admin');
-                    // Set legacy ID for compatibility if needed, or just rely on state
                     localStorage.setItem('masjidId', 'admin');
+                } else if (user.role === 'masjid') {
+                    setUserType('masjid');
+                    // Ensure masjidId is set if it wasn't already
+                    if (!masjidId) localStorage.setItem('masjidId', user.id);
                 } else {
                     setUserType('donor');
                 }
@@ -58,11 +61,13 @@ export default function DashboardLayout({
             { name: 'Manage Masjids', href: '/dashboard/admin/masjids', icon: Building2 },
             { name: 'Manage Donors', href: '/dashboard/admin/donors', icon: HeartHandshake },
             { name: 'Manage Needy', href: '/dashboard/admin/needy', icon: HandHelping },
+            { name: 'Manage Hadith', href: '/dashboard/admin/hadith', icon: Quote },
         ];
     } else if (userType === 'masjid') {
         navigation = [
             { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-            { name: 'Speeches & Events', href: '/dashboard/speeches', icon: Mic },
+            { name: 'Events', href: '/dashboard/events', icon: Calendar },
+            { name: 'Khutba', href: '/dashboard/speeches', icon: Mic },
             { name: 'Prayer Times', href: '/dashboard/prayers', icon: Clock },
         ];
     } else {

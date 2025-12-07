@@ -1,32 +1,84 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import masjidsData from '@/data/masjids.json';
-import prayersData from '@/data/prayers.json';
-import { Masjid, PrayerTimes } from '@/types';
-
-const masjids = masjidsData as Masjid[];
-const initialPrayers = prayersData as PrayerTimes[];
+import { PrayerTimes } from '@/types';
+import Swal from 'sweetalert2';
 
 export default function ManagePrayersPage() {
     const [masjidId, setMasjidId] = useState<string | null>(null);
     const [prayers, setPrayers] = useState<PrayerTimes | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const id = localStorage.getItem('masjidId');
         if (id) {
             setMasjidId(id);
-            const p = initialPrayers.find(p => p.masjidId === id);
-            if (p) setPrayers(p);
+            fetchPrayers(id);
         }
     }, []);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        alert('Prayer times updated successfully (Mock)');
+    const fetchPrayers = async (id: string) => {
+        try {
+            const res = await fetch(`/api/prayers?masjidId=${id}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data) {
+                    setPrayers(data);
+                } else {
+                    // Initialize with empty/default if not found
+                    setPrayers({
+                        masjidId: id,
+                        date: new Date().toISOString().split('T')[0],
+                        fajr: '', dhuhr: '', asr: '', maghrib: '', isha: '', jummah: ''
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching prayers:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    if (!masjidId || !prayers) return null;
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!prayers || !masjidId) return;
+
+        try {
+            const res = await fetch('/api/prayers', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(prayers),
+            });
+
+            if (res.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Prayer times updated successfully',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update prayer times'
+                });
+            }
+        } catch (error) {
+            console.error('Error updating prayers:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred'
+            });
+        }
+    };
+
+    if (!masjidId) return null;
+    if (loading) return <div className="p-6 text-center">Loading...</div>;
+    if (!prayers) return <div className="p-6 text-center">No prayer times found.</div>;
 
     return (
         <div className="max-w-2xl">

@@ -29,10 +29,15 @@ export default function DashboardPage() {
         if (userStr) {
             try {
                 const user = JSON.parse(userStr);
-                if (user.username !== 'admin') {
+                if (user.role === 'donor') {
                     router.push('/dashboard/donor');
                     return;
                 }
+                if (user.role === 'admin' || user.username === 'admin') {
+                    router.push('/dashboard/admin');
+                    return;
+                }
+                // If role is masjid, we stay here.
             } catch (e) { }
         }
 

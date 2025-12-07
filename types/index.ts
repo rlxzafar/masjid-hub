@@ -7,6 +7,7 @@ export interface Masjid {
   contact: string;
   username?: string;
   password?: string;
+  isDisabled?: boolean;
 }
 
 export interface PrayerTimes {
@@ -26,8 +27,16 @@ export interface Speech {
   title: string;
   speaker: string;
   datetime: string; // ISO string
-  type: 'speech' | 'event';
-  youtubeUrl?: string;
+  youtubeUrl: string; // Made required as per new requirement for speeches
+  description: string;
+}
+
+export interface MasjidEvent {
+  id: string;
+  masjidId: string;
+  title: string;
+  type: 'khutba' | 'iftari' | 'meeting' | 'other';
+  datetime: string; // ISO string
   description: string;
 }
 
@@ -63,8 +72,10 @@ export interface NeedyPerson {
   amountNeeded: number;
   amountRaised?: number;
   status: 'open' | 'fulfilled';
-  priority?: 'high' | 'normal' | 'low';
+  urgency?: 'critical' | 'urgent' | 'necessary';
   fulfilledAt?: string;
+  fatherName?: string;
+  address?: string;
 }
 
 export interface Donation {

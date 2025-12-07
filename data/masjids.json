@@ -1,26 +1,43 @@
 [
   {
-    "id": "1",
-    "name": "Masjid Al-Noor",
-    "address": "123 Peace Street, Cityville",
+    "id": "6vaoeo1qo",
+    "name": "Zama Masjid",
+    "address": "Nai Bazar Bhadohi",
+    "imamName": "Gufran Rahmani",
+    "contact": "8285896543",
     "image": "/masjid-placeholder.png",
-    "imamName": "Sheikh Ahmed",
-    "contact": "+1 234 567 8900"
+    "username": "zama",
+    "password": "123456"
   },
   {
-    "id": "2",
-    "name": "Central Jamia Mosque",
-    "address": "456 Unity Avenue, Metro City",
+    "id": "5evpkfv3n",
+    "name": "Muhammadi Masjid",
+    "address": "Nai Bazar",
+    "imamName": "Amantullah",
+    "contact": "8976436824",
     "image": "/masjid-placeholder.png",
-    "imamName": "Imam Yusuf",
-    "contact": "+1 987 654 3210"
+    "username": "muhammadi",
+    "password": "123456"
   },
   {
-    "id": "3",
-    "name": "Masjid Al-Salam",
-    "address": "789 Harmony Lane, Suburbia",
-    "image": "/masjid-placeholder.png",
-    "imamName": "Sheikh Ibrahim",
-    "contact": "+1 555 123 4567"
+    "id": "gl9fuo0a3",
+    "name": "noori masjid",
+    "address": "Nai Bazar",
+    "imamName": "rafique raza",
+    "contact": "8967569034",
+    "image": "https://res.cloudinary.com/dxzoie0ab/image/upload/v1764992091/masjids/xjup9evx6ertn826mnp0.png",
+    "username": "noori",
+    "password": "123456"
+  },
+  {
+    "id": "ckar4ypse",
+    "name": "Badi Masjid",
+    "address": "Nai Bazar",
+    "imamName": "Fazalurahman",
+    "contact": "6356789034",
+    "image": "https://res.cloudinary.com/dxzoie0ab/image/upload/v1765002607/masjids/pckbykjf7eph7mwo8ima.jpg",
+    "username": "badi",
+    "password": "123456",
+    "isDisabled": false
   }
 ]

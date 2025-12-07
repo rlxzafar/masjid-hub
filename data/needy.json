@@ -7,6 +7,8 @@
     "amountNeeded": "30000",
     "status": "fulfilled",
     "fulfilledAt": "2025-12-04T06:07:07.806Z",
+    "urgency": "necessary",
+    "address": "123 Main St, Cityville",
     "priority": "high"
   }
 ]

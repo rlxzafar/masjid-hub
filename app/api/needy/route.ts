@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         // In a real app, verify admin session here
 
-        const { name, description, contact, amountNeeded, priority } = body;
+        const { name, description, contact, amountNeeded, urgency, fatherName, address } = body;
 
         if (!name || !description || !contact || !amountNeeded) {
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
@@ -57,7 +57,9 @@ export async function POST(request: Request) {
             contact,
             amountNeeded: Number(amountNeeded),
             status: 'open',
-            priority: priority || 'normal'
+            urgency: urgency || 'urgent',
+            fatherName,
+            address
         };
 
         needy.push(newPerson);

@@ -1,0 +1,37 @@
+[
+    {
+        "id": "1",
+        "arabic": "مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ",
+        "english": "Charity does not decrease wealth.",
+        "source": "Sahih Muslim",
+        "topic": "Charity"
+    },
+    {
+        "id": "2",
+        "arabic": "اتَّقُوا النَّارَ وَلَوْ بِشِقِّ تَمْرَةٍ",
+        "english": "Save yourself from Hell-fire even by giving half a date-fruit in charity.",
+        "source": "Sahih Al-Bukhari",
+        "topic": "Charity"
+    },
+    {
+        "id": "3",
+        "arabic": "الْمُؤْمِنُ لِلْمُؤْمِنِ كَالْبُنْيَانِ يَشُدُّ بَعْضُهُ بَعْضًا",
+        "english": "A believer to another believer is like a building whose different parts enforce each other.",
+        "source": "Sahih Al-Bukhari",
+        "topic": "Unity"
+    },
+    {
+        "id": "4",
+        "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+        "english": "Whoever believes in Allah and the Last Day should talk what is good or keep quiet.",
+        "source": "Sahih Al-Bukhari",
+        "topic": "Iman"
+    },
+    {
+        "id": "5",
+        "arabic": "الدُّعَاءُ هُوَ الْعِبَادَةُ",
+        "english": "Supplication is worship.",
+        "source": "Sunan Abi Dawud",
+        "topic": "Tauheed"
+    }
+]

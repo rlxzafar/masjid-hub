@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Masjid } from '@/types';
-import { Plus, MapPin, ArrowLeft, Building, Edit2, Trash2, User, Phone, X, Upload, Lock, Mail } from 'lucide-react';
+import { Plus, MapPin, ArrowLeft, Building, Edit2, Trash2, User, Phone, X, Upload, Lock, Mail, Settings, Power, Eye } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 export default function MasjidsPage() {
@@ -22,6 +22,7 @@ export default function MasjidsPage() {
         username: '',
         password: ''
     });
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     useEffect(() => {
         fetchMasjids();
@@ -64,6 +65,7 @@ export default function MasjidsPage() {
                 password: ''
             });
         }
+        setSelectedFile(null);
         setIsModalOpen(true);
     };
 
@@ -78,10 +80,29 @@ export default function MasjidsPage() {
         setModalLoading(true);
 
         try {
+            let imageUrl = formData.image;
+
+            if (selectedFile) {
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', selectedFile);
+
+                const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: uploadFormData,
+                });
+
+                if (!uploadRes.ok) {
+                    throw new Error('Failed to upload image');
+                }
+
+                const uploadData = await uploadRes.json();
+                imageUrl = uploadData.url;
+            }
+
             const method = editingMasjid ? 'PUT' : 'POST';
             const body = editingMasjid
-                ? { ...formData, id: editingMasjid.id }
-                : formData;
+                ? { ...formData, image: imageUrl, id: editingMasjid.id }
+                : { ...formData, image: imageUrl };
 
             // If editing and password is empty, remove it from body so it's not updated
             if (editingMasjid && !formData.password) {
@@ -95,15 +116,20 @@ export default function MasjidsPage() {
             });
 
             if (res.ok) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: editingMasjid ? 'Masjid updated successfully' : 'Masjid added successfully',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+                // Fetch latest data to ensure consistency
                 fetchMasjids();
                 handleCloseModal();
+
+                // Use setTimeout to ensure modal is unmounted before Swal fires
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: editingMasjid ? 'Masjid updated successfully' : 'Masjid added successfully',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }, 100);
             } else {
                 const error = await res.json();
                 Swal.fire({
@@ -166,6 +192,52 @@ export default function MasjidsPage() {
         }
     };
 
+    const handleToggleStatus = async (masjid: Masjid) => {
+        try {
+            const newStatus = !masjid.isDisabled;
+
+            // Optimistic update
+            setMasjids(masjids.map(m =>
+                m.id === masjid.id ? { ...m, isDisabled: newStatus } : m
+            ));
+
+            const res = await fetch('/api/masjids', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: masjid.id,
+                    isDisabled: newStatus
+                }),
+            });
+
+            if (!res.ok) {
+                // Revert on failure
+                setMasjids(masjids.map(m =>
+                    m.id === masjid.id ? { ...m, isDisabled: masjid.isDisabled } : m
+                ));
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update masjid status'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Status Updated',
+                    text: `Masjid has been ${newStatus ? 'disabled' : 'enabled'}.`,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            // Revert on error
+            setMasjids(masjids.map(m =>
+                m.id === masjid.id ? { ...m, isDisabled: masjid.isDisabled } : m
+            ));
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-12">
             <div className="mb-8">
@@ -204,15 +276,26 @@ export default function MasjidsPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {masjids.map(masjid => (
-                        <div key={masjid.id} className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full transform hover:-translate-y-1">
+                        <div key={masjid.id} className={`group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border ${masjid.isDisabled ? 'border-red-200' : 'border-gray-100'} overflow-hidden flex flex-col h-full transform hover:-translate-y-1`}>
                             {/* Cover Image */}
                             <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
                                 <img
                                     src={masjid.image || '/masjid-placeholder.png'}
                                     alt={masjid.name}
-                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${masjid.isDisabled ? 'grayscale' : ''}`}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+
+                                {/* Status Badge */}
+                                <div className="absolute top-4 right-4">
+                                    <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${masjid.isDisabled
+                                            ? 'bg-red-500 text-white'
+                                            : 'bg-emerald-500 text-white'
+                                        }`}>
+                                        {masjid.isDisabled ? 'DISABLED' : 'ACTIVE'}
+                                    </span>
+                                </div>
+
                                 <div className="absolute bottom-4 left-4 right-4">
                                     <h3 className="text-xl font-bold text-white truncate shadow-sm" title={masjid.name}>{masjid.name}</h3>
                                     <div className="flex items-center text-emerald-100 text-sm mt-1">
@@ -250,26 +333,46 @@ export default function MasjidsPage() {
                                     </div>
                                 </div>
 
-                                <div className="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
-                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                                        @{masjid.username}
-                                    </span>
+                                <div className="mt-auto space-y-3">
+                                    <Link
+                                        href={`/dashboard/admin/masjids/${masjid.id}/manage`}
+                                        className="flex items-center justify-center w-full gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors text-sm font-medium"
+                                    >
+                                        <Settings className="w-4 h-4" />
+                                        Manage Content
+                                    </Link>
 
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => handleOpenModal(masjid)}
-                                            className="cursor-pointer p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-                                            title="Edit Details"
-                                        >
-                                            <Edit2 className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(masjid.id, masjid.name)}
-                                            className="cursor-pointer p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                            title="Delete Masjid"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                                    <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                                            @{masjid.username}
+                                        </span>
+
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => handleToggleStatus(masjid)}
+                                                className={`cursor-pointer p-2 rounded-lg transition-all ${masjid.isDisabled
+                                                        ? 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
+                                                        : 'text-emerald-600 hover:text-red-600 hover:bg-red-50'
+                                                    }`}
+                                                title={masjid.isDisabled ? "Enable Masjid" : "Disable Masjid"}
+                                            >
+                                                <Power className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleOpenModal(masjid)}
+                                                className="cursor-pointer p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                title="Edit Details"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(masjid.id, masjid.name)}
+                                                className="cursor-pointer p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                title="Delete Masjid"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -357,17 +460,23 @@ export default function MasjidsPage() {
                                 {/* Right Column */}
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL (Optional)</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Masjid Image</label>
                                         <div className="relative">
                                             <Upload className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                                             <input
-                                                type="url"
+                                                type="file"
+                                                accept="image/*"
                                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                                                placeholder="https://example.com/image.jpg"
-                                                value={formData.image}
-                                                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                                onChange={(e) => {
+                                                    if (e.target.files && e.target.files[0]) {
+                                                        setSelectedFile(e.target.files[0]);
+                                                    }
+                                                }}
                                             />
                                         </div>
+                                        {formData.image && !selectedFile && (
+                                            <p className="text-xs text-gray-500 mt-1">Current image: <a href={formData.image} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline">View</a></p>
+                                        )}
                                     </div>
 
                                     <div className="pt-4 border-t border-gray-100 mt-4">
